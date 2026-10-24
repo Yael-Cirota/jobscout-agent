@@ -1,0 +1,5 @@
+mcp==1.30.0
+openai-codex==0.163.0
+openai-codex-cli-bin==0.163.0
+pytest==9.1.1
+# Codex CLI (npm i -g @openai/codex) version used: 0.164.0

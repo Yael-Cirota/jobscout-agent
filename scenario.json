@@ -1,0 +1,29 @@
+{
+  "name": "jobscout-two-sessions",
+  "model": "gpt-5.6-luna",
+  "effort": "medium",
+  "target_company": "JFrog",
+  "details_turns": ["t7"],
+  "sessions": [
+    {
+      "session": 1,
+      "turns": [
+        {"id": "t1", "text": "Find me backend jobs in Tel Aviv.", "covers": ["tool_use", "external_tool"]},
+        {"id": "t2", "text": "Save the JFrog one.", "covers": ["tool_use", "save_to_memory"]},
+        {"id": "t3", "text": "I applied to it.", "covers": ["save_to_memory"]},
+        {"id": "t4", "text": "Don't show me jobs outside Tel Aviv.", "covers": ["save_to_memory"]}
+      ]
+    },
+    {
+      "session": 2,
+      "new_instance": true,
+      "turns": [
+        {"id": "t5", "text": "What's the status of my applications?", "covers": ["retrieve_from_memory"]},
+        {"id": "t6", "text": "Anything new?", "covers": ["retrieve_from_memory", "external_tool"]},
+        {"id": "t7", "text": "Show me that Haifa job.", "covers": ["contradiction"]},
+        {"id": "t8", "text": "Yes, add Haifa to my cities.", "covers": ["save_to_memory", "contradiction"]}
+      ]
+    }
+  ],
+  "checks": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"]
+}

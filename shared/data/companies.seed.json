@@ -1,0 +1,13 @@
+[
+  {"name": "Lightrun", "ats": "greenhouse", "token": "lightrun"},
+  {"name": "Riskified", "ats": "greenhouse", "token": "riskified"},
+  {"name": "JFrog", "ats": "greenhouse", "token": "jfrog"},
+  {"name": "Similarweb", "ats": "greenhouse", "token": "similarweb"},
+  {"name": "Taboola", "ats": "greenhouse", "token": "taboola"},
+  {"name": "Payoneer", "ats": "greenhouse", "token": "payoneer"},
+  {"name": "Melio", "ats": "greenhouse", "token": "melio"},
+  {"name": "Forter", "ats": "greenhouse", "token": "forter"},
+  {"name": "NICE", "ats": "greenhouse", "token": "nice"},
+  {"name": "WalkMe", "ats": "lever", "token": "walkme"},
+  {"name": "Cloudinary", "ats": "lever", "token": "cloudinary"}
+]
