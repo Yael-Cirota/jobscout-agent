@@ -1,0 +1,242 @@
+{
+  "version": "api",
+  "model": "gpt-5.6-luna",
+  "effort": "medium",
+  "library_versions": {
+    "openai": "3.40.0"
+  },
+  "http_mode": "replay",
+  "billing": "openai-api",
+  "compact_threshold": 30000,
+  "started_at": "2026-10-27T22:41:12Z",
+  "turns": [
+    {
+      "session": 1,
+      "id": "t1",
+      "text": "Find me backend jobs in Tel Aviv.",
+      "tokens": {
+        "input": 821,
+        "cache_read": 0,
+        "cache_write": 1547,
+        "output": 408
+      },
+      "model_calls": 2,
+      "tools": [
+        "search_jobs"
+      ],
+      "cost_usd": null,
+      "time_s": 6.81
+    },
+    {
+      "session": 1,
+      "id": "t2",
+      "text": "Save the JFrog one.",
+      "tokens": {
+        "input": 6,
+        "cache_read": 3468,
+        "cache_write": 446,
+        "output": 57
+      },
+      "model_calls": 2,
+      "tools": [
+        "track_job"
+      ],
+      "cost_usd": null,
+      "time_s": 3.43
+    },
+    {
+      "session": 1,
+      "id": "t3",
+      "text": "I applied to it.",
+      "tokens": {
+        "input": 6,
+        "cache_read": 4048,
+        "cache_write": 123,
+        "output": 46
+      },
+      "model_calls": 2,
+      "tools": [
+        "track_job"
+      ],
+      "cost_usd": null,
+      "time_s": 3.46
+    },
+    {
+      "session": 1,
+      "id": "t4",
+      "text": "Don't show me jobs outside Tel Aviv.",
+      "tokens": {
+        "input": 6,
+        "cache_read": 4309,
+        "cache_write": 206,
+        "output": 102
+      },
+      "model_calls": 2,
+      "tools": [
+        "update_profile"
+      ],
+      "cost_usd": null,
+      "time_s": 3.22
+    },
+    {
+      "session": 2,
+      "id": "t5",
+      "text": "What's the status of my applications?",
+      "tokens": {
+        "input": 918,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 97
+      },
+      "model_calls": 1,
+      "tools": [],
+      "cost_usd": null,
+      "time_s": 2.01
+    },
+    {
+      "session": 2,
+      "id": "t6",
+      "text": "Anything new?",
+      "tokens": {
+        "input": 6,
+        "cache_read": 1075,
+        "cache_write": 1816,
+        "output": 461
+      },
+      "model_calls": 2,
+      "tools": [
+        "search_jobs"
+      ],
+      "cost_usd": null,
+      "time_s": 4.26
+    },
+    {
+      "session": 2,
+      "id": "t7",
+      "text": "Show me that Haifa job.",
+      "tokens": {
+        "input": 6,
+        "cache_read": 4100,
+        "cache_write": 805,
+        "output": 208
+      },
+      "model_calls": 2,
+      "tools": [
+        "search_jobs"
+      ],
+      "cost_usd": null,
+      "time_s": 3.33
+    },
+    {
+      "session": 2,
+      "id": "t8",
+      "text": "Yes, add Haifa to my cities.",
+      "tokens": {
+        "input": 6,
+        "cache_read": 5471,
+        "cache_write": 341,
+        "output": 97
+      },
+      "model_calls": 2,
+      "tools": [
+        "update_profile"
+      ],
+      "cost_usd": null,
+      "time_s": 3.01
+    }
+  ],
+  "totals": {
+    "tokens": {
+      "input": 1775,
+      "cache_read": 22471,
+      "cache_write": 5284,
+      "output": 1476
+    },
+    "cache_pct": 76.1,
+    "model_calls": 15,
+    "cost_usd": null,
+    "time_s": 29.5
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "passed": true,
+      "detail": "gh:jfrog:7510102 status=applied history=['saved', 'applied']"
+    },
+    {
+      "id": "C2",
+      "passed": true,
+      "detail": "cities=['Tel Aviv'] strict=True changes=2"
+    },
+    {
+      "id": "C3",
+      "passed": true,
+      "detail": "9 ids returned, 0 already seen []"
+    },
+    {
+      "id": "C4",
+      "passed": true,
+      "detail": "t1: 11 board requests, 1 search_jobs; t6: 11 board requests, 1 search_jobs"
+    },
+    {
+      "id": "C5",
+      "passed": true,
+      "detail": "mentions company+applied=True, new instance=True"
+    },
+    {
+      "id": "C6",
+      "passed": true,
+      "detail": "cities=['Tel Aviv'] refers_to_rule_or_asks=True"
+    },
+    {
+      "id": "C7",
+      "passed": true,
+      "detail": "cities=['Tel Aviv', 'Haifa'] new_change_entry=True"
+    },
+    {
+      "id": "C8",
+      "passed": true,
+      "detail": "details outside ['t7']: []; search outputs with description: []"
+    }
+  ],
+  "checks_passed": "8/8",
+  "loc": {
+    "caching": 33,
+    "compaction": 70,
+    "config": 37,
+    "context": 21,
+    "history": 48,
+    "items": 34,
+    "logger": 12,
+    "loop": 47,
+    "memory": 26,
+    "tokens": 34,
+    "tools": 37,
+    "agent+main": 115,
+    "total": 514
+  },
+  "session_end_summaries": {
+    "1": {
+      "tokens": {
+        "input": 875,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 79
+      },
+      "model_calls": 1,
+      "cost_usd": null,
+      "time_s": 1.99
+    },
+    "2": {
+      "tokens": {
+        "input": 3,
+        "cache_read": 0,
+        "cache_write": 1218,
+        "output": 130
+      },
+      "model_calls": 1,
+      "cost_usd": null,
+      "time_s": 1.79
+    }
+  }
+}

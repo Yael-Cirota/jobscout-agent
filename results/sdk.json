@@ -8,156 +8,154 @@
   },
   "http_mode": "replay",
   "billing": "chatgpt-plus (cost_usd is API-equivalent)",
-  "started_at": "2026-10-24T21:33:17Z",
+  "started_at": "2026-10-27T22:41:48Z",
   "turns": [
     {
       "session": 1,
       "id": "t1",
       "text": "Find me backend jobs in Tel Aviv.",
       "tokens": {
-        "input": 12950,
-        "cache_read": 44800,
+        "input": 8135,
+        "cache_read": 33664,
         "cache_write": 0,
-        "output": 732
+        "output": 823
       },
       "model_calls": 2,
       "tools": [
         "search_jobs"
       ],
       "cost_usd": null,
-      "time_s": 8.28
+      "time_s": 10.82
     },
     {
       "session": 1,
       "id": "t2",
       "text": "Save the JFrog one.",
       "tokens": {
-        "input": 1086,
-        "cache_read": 46208,
+        "input": 2838,
+        "cache_read": 28544,
         "cache_write": 0,
-        "output": 122
+        "output": 170
       },
       "model_calls": 2,
       "tools": [
         "track_job"
       ],
       "cost_usd": null,
-      "time_s": 2.81
+      "time_s": 3.0
     },
     {
       "session": 1,
       "id": "t3",
       "text": "I applied to it.",
       "tokens": {
-        "input": 575,
-        "cache_read": 47104,
+        "input": 758,
+        "cache_read": 31104,
         "cache_write": 0,
-        "output": 121
+        "output": 210
       },
       "model_calls": 2,
       "tools": [
         "track_job"
       ],
       "cost_usd": null,
-      "time_s": 2.67
+      "time_s": 3.5
     },
     {
       "session": 1,
       "id": "t4",
       "text": "Don't show me jobs outside Tel Aviv.",
       "tokens": {
-        "input": 546,
-        "cache_read": 47616,
+        "input": 690,
+        "cache_read": 31744,
         "cache_write": 0,
-        "output": 192
+        "output": 235
       },
       "model_calls": 2,
       "tools": [
         "update_profile"
       ],
       "cost_usd": null,
-      "time_s": 3.37
+      "time_s": 3.29
     },
     {
       "session": 2,
       "id": "t5",
       "text": "What's the status of my applications?",
       "tokens": {
-        "input": 1108,
-        "cache_read": 48768,
+        "input": 2450,
+        "cache_read": 31744,
         "cache_write": 0,
-        "output": 147
+        "output": 208
       },
       "model_calls": 2,
       "tools": [
         "get_tracker"
       ],
       "cost_usd": null,
-      "time_s": 4.41
+      "time_s": 5.31
     },
     {
       "session": 2,
       "id": "t6",
       "text": "Anything new?",
       "tokens": {
-        "input": 2047,
-        "cache_read": 50688,
+        "input": 2137,
+        "cache_read": 34944,
         "cache_write": 0,
-        "output": 315
+        "output": 346
       },
       "model_calls": 2,
       "tools": [
         "search_jobs"
       ],
       "cost_usd": null,
-      "time_s": 4.05
+      "time_s": 4.78
     },
     {
       "session": 2,
       "id": "t7",
       "text": "Show me that Haifa job.",
       "tokens": {
-        "input": 869,
-        "cache_read": 53120,
+        "input": 460,
+        "cache_read": 18560,
         "cache_write": 0,
-        "output": 315
+        "output": 174
       },
-      "model_calls": 2,
-      "tools": [
-        "get_job_details"
-      ],
+      "model_calls": 1,
+      "tools": [],
       "cost_usd": null,
-      "time_s": 3.96
+      "time_s": 2.13
     },
     {
       "session": 2,
       "id": "t8",
       "text": "Yes, add Haifa to my cities.",
       "tokens": {
-        "input": 702,
-        "cache_read": 54144,
+        "input": 2798,
+        "cache_read": 35840,
         "cache_write": 0,
-        "output": 208
+        "output": 220
       },
       "model_calls": 2,
       "tools": [
         "update_profile"
       ],
       "cost_usd": null,
-      "time_s": 3.05
+      "time_s": 3.44
     }
   ],
   "totals": {
     "tokens": {
-      "input": 19883,
-      "cache_read": 392448,
+      "input": 20266,
+      "cache_read": 246144,
       "cache_write": 0,
-      "output": 2152
+      "output": 2386
     },
-    "cache_pct": 95.2,
-    "model_calls": 16,
+    "cache_pct": 92.4,
+    "model_calls": 15,
     "cost_usd": null,
-    "time_s": 32.6
+    "time_s": 36.3
   },
   "checks": [
     {
