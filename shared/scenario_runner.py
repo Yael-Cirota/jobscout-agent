@@ -50,10 +50,15 @@ def _totals(turns):
             "time_s": round(sum(t["time_s"] for t in turns), 1)}
 
 
+def default_out_path(version):
+    """A fresh results/<version>_<timestamp>.json per run, so runs never overwrite each other."""
+    return Path("results") / f"{version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+
 def run_scenario(scenario, store, make_agent, version, out_path, extra=None, loc=None):
     """make_agent(session_number) -> a NEW agent object each call (session 2 = new instance)."""
     out_path = Path(out_path)
-    snap_dir = out_path.parent / f"{version}_snapshots"
+    snap_dir = out_path.parent / f"{out_path.stem}_snapshots"
     snap_dir.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     turns, snaps, answers, instances = [], {}, {}, {}

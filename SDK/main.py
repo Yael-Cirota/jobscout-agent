@@ -1,6 +1,6 @@
 """Run the JobScout scenario on the Codex SDK.
 
-python SDK/main.py --scenario scenario.json --out results/sdk.json
+python SDK/main.py --scenario scenario.json [--out results/sdk.json]
 """
 import argparse
 import os
@@ -18,7 +18,7 @@ from shared.store import Store  # noqa: E402
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenario", required=True)
-    ap.add_argument("--out", required=True)
+    ap.add_argument("--out", help="result file (default: results/sdk_<timestamp>.json)")
     ap.add_argument("--state-dir", default="state/sdk")
     args = ap.parse_args()
 
@@ -43,7 +43,8 @@ def main():
     extra = {"library_versions": {"openai-codex": metadata.version("openai-codex"),
                                   "mcp": metadata.version("mcp")},
              "http_mode": http_mode, "billing": "chatgpt-plus (cost_usd is API-equivalent)"}
-    scenario_runner.run_scenario(scenario, store, make_agent, "sdk", args.out, extra, loc)
+    out = args.out or scenario_runner.default_out_path("sdk")
+    scenario_runner.run_scenario(scenario, store, make_agent, "sdk", out, extra, loc)
 
 
 if __name__ == "__main__":
