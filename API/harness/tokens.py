@@ -8,8 +8,10 @@ from .logger import log
 def usage_of(resp):
     """Normalize a Responses API usage block. OpenAI counts cached tokens inside input_tokens."""
     u = items.get(resp, "usage") or {}
+    details = items.get(u, "input_tokens_details") or {}
     return {"input_total": items.get(u, "input_tokens", 0) or 0,
-            "cached": items.get(items.get(u, "input_tokens_details") or {}, "cached_tokens", 0) or 0,
+            "cached": items.get(details, "cached_tokens", 0) or 0,
+            "cache_write": items.get(details, "cache_write_tokens", 0) or 0,   # absent on older API versions
             "output": items.get(u, "output_tokens", 0) or 0,
             "reasoning": items.get(items.get(u, "output_tokens_details") or {}, "reasoning_tokens", 0) or 0}
 
@@ -32,10 +34,10 @@ class TokenTracker:
 
     def summary(self, bucket, wall_seconds=None):
         mine = [c for c in self.calls if c["bucket"] == bucket]
-        total = {k: sum(c[k] for c in mine) for k in ("input_total", "cached", "output")}
-        # OpenAI has no cache-write charge: cache_write is always 0 (kept for the shared result shape)
-        tokens = {"input": total["input_total"] - total["cached"], "cache_read": total["cached"],
-                  "cache_write": 0, "output": total["output"]}
+        total = {k: sum(c[k] for c in mine) for k in ("input_total", "cached", "cache_write", "output")}
+        # input_tokens already contains the cached and cache-written tokens; "input" is what is left
+        tokens = {"input": max(total["input_total"] - total["cached"] - total["cache_write"], 0),
+                  "cache_read": total["cached"], "cache_write": total["cache_write"], "output": total["output"]}
         return {"tokens": tokens, "model_calls": len(mine),
                 "cost_usd": pricing.cost_usd(self.model, total["input_total"], total["cached"], total["output"]),
                 "time_s": round(wall_seconds if wall_seconds is not None else sum(c["seconds"] for c in mine), 2)}

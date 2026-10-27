@@ -2,7 +2,7 @@
 
 Rules: tools -> instructions -> history never change between calls, and the dynamic <context> lives in the
 newest user item only (it is stored with that item, so later calls replay it byte-for-byte).
-There is no cache write on OpenAI, so cache_write is always 0.
+Cache writes, when the API reports them, are read from the usage block (see tokens.py).
 """
 import hashlib
 import json
@@ -41,4 +41,4 @@ class PrefixMonitor:
 
     def after_call(self, resp):
         u = usage_of(resp)
-        log(__file__, f"cached {u['cached']} of {u['input_total']} input tokens")
+        log(__file__, f"cached {u['cached']} of {u['input_total']} input tokens (cache_write {u['cache_write']})")

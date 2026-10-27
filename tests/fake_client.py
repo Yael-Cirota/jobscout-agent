@@ -2,8 +2,9 @@
 from types import SimpleNamespace
 
 
-def usage(input_tokens=100, cached=0, output=20, reasoning=0):
-    return {"input_tokens": input_tokens, "input_tokens_details": {"cached_tokens": cached},
+def usage(input_tokens=100, cached=0, output=20, reasoning=0, cache_write=0):
+    return {"input_tokens": input_tokens,
+            "input_tokens_details": {"cached_tokens": cached, "cache_write_tokens": cache_write},
             "output_tokens": output, "output_tokens_details": {"reasoning_tokens": reasoning}}
 
 

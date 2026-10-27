@@ -13,7 +13,7 @@ def fixed_prices(monkeypatch):
 
 def test_usage_normalizes_dict_and_object_shapes():
     resp = text_response("hi", input_tokens=500, cached=200, output=40, reasoning=15)
-    assert usage_of(resp) == {"input_total": 500, "cached": 200, "output": 40, "reasoning": 15}
+    assert usage_of(resp) == {"input_total": 500, "cached": 200, "cache_write": 0, "output": 40, "reasoning": 15}
     assert usage_of(type("R", (), {"usage": None})())["input_total"] == 0
 
 
@@ -27,6 +27,21 @@ def test_turn_sums_over_calls_and_splits_cached_input():
     assert s["model_calls"] == 2 and s["time_s"] == 3.0
     # 1200 uncached*1 + 1000 cached*0.1 + 80 out*10 = 2100 per million
     assert s["cost_usd"] == pytest.approx(0.0021)
+
+
+def test_cache_write_is_read_from_the_usage_when_the_api_reports_it():
+    t = TokenTracker("m")
+    t.record("t1", text_response("a", input_tokens=1000, cached=300, cache_write=500, output=5), 1.0)
+    assert t.summary("t1")["tokens"] == {"input": 200, "cache_read": 300, "cache_write": 500, "output": 5}
+
+
+def test_real_sdk_usage_object_is_understood():
+    from types import SimpleNamespace
+    from openai.types.responses import ResponseUsage
+    u = ResponseUsage(input_tokens=10, input_tokens_details={"cached_tokens": 4, "cache_write_tokens": 2},
+                      output_tokens=5, output_tokens_details={"reasoning_tokens": 3}, total_tokens=15)
+    assert usage_of(SimpleNamespace(usage=u)) == {"input_total": 10, "cached": 4, "cache_write": 2,
+                                                  "output": 5, "reasoning": 3}
 
 
 def test_unknown_model_cost_is_none_not_a_guess():
