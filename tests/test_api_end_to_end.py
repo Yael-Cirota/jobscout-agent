@@ -130,5 +130,6 @@ def test_missing_key_stops_the_api_cli(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr("sys.argv", ["main", "--scenario", str(SCENARIO), "--out", "x.json"])
     from API import main as api_main
+    monkeypatch.setattr(api_main, "load_dotenv", lambda *a, **k: None)  # ignore a real .env
     with pytest.raises(SystemExit, match="OPENAI_API_KEY"):
         api_main.main()

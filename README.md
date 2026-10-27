@@ -15,8 +15,8 @@ The SDK version always uses the `codex login`. If `OPENAI_API_KEY` is set, `SDK/
 Set `model` in `scenario.json` (a model available in Codex with Plus and in the API).
 
 ## Setup (API version)
-Same venv and `pip install -r requirements.txt`. Set `OPENAI_API_KEY` (env var only, never commit it);
-`API/main.py` exits without it. `shared/pricing.py` needs the model's prices, or `cost_usd` stays `null`.
+Same venv and `pip install -r requirements.txt`. Copy `.env.example` to `.env` and put your key there (`.env` is git-ignored), or set the
+`OPENAI_API_KEY` environment variable (it wins over `.env`). `API/main.py` exits without a key. `shared/pricing.py` needs the model's prices, or `cost_usd` stays `null`.
 
 ## Run
 ```bash

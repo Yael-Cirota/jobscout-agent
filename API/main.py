@@ -13,6 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from dotenv import load_dotenv  # noqa: E402
+
 from API.agent import JobScoutAgent  # noqa: E402
 from API.harness.config import HarnessConfig  # noqa: E402
 from shared import scenario_runner  # noqa: E402
@@ -45,8 +47,9 @@ def main():
     ap.add_argument("--compact-threshold", type=int, default=HarnessConfig().compact_threshold)
     args = ap.parse_args()
 
+    load_dotenv(ROOT / ".env")  # a real environment variable still wins over the file
     if not os.environ.get("OPENAI_API_KEY"):
-        sys.exit("[main.py] OPENAI_API_KEY is not set. The API version needs it (the SDK version uses codex login).")
+        sys.exit("[main.py] OPENAI_API_KEY is not set (environment or .env). The API version needs it (the SDK version uses codex login).")
     scenario = scenario_runner.load_scenario(args.scenario)
     config = dataclasses.replace(HarnessConfig(), compact_threshold=args.compact_threshold)
 
