@@ -61,3 +61,11 @@ def store(tmp_path):
     s._write("companies.json", COMPANIES)
     s.set_turn(1, "t1")
     return s
+
+
+@pytest.fixture(autouse=True)
+def restore_log_sink():
+    from API.harness import logger
+    previous = logger._sink
+    yield
+    logger._sink = previous
