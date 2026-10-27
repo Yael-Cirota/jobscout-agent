@@ -1,9 +1,11 @@
 """Scenario loading + running, snapshots, LOC counting. Used by both main.py files.
 
+Turns come from the scenario file (scripted) or are typed at a prompt (interactive_sessions).
 An agent must provide:  ask(text) -> TurnResult-dict  and  end_session().
 TurnResult dict: {"answer", "tokens": {"input","cache_read","cache_write","output"},
                   "model_calls", "tools": [names], "cost_usd", "time_s"}
 """
+import itertools
 import json
 import re
 import time
@@ -55,32 +57,67 @@ def default_out_path(version):
     return Path("results") / f"{version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
 
-def run_scenario(scenario, store, make_agent, version, out_path, extra=None, loc=None):
-    """make_agent(session_number) -> a NEW agent object each call (session 2 = new instance)."""
+def scripted_sessions(scenario):
+    """The turns written in the scenario file, as (session, [(turn_id, text), ...]) pairs."""
+    for sess in scenario["sessions"]:
+        yield sess["session"], [(t["id"], t["text"]) for t in sess["turns"]]
+
+
+def interactive_sessions():
+    """Turns typed at a prompt. /new starts the next session (a new agent instance), /quit ends the run.
+    Turn ids run t1, t2, ... across sessions, like the scripted scenario, so the checks still apply."""
+    print("[scenario] interactive: type a message, /new for a new session, /quit to finish")
+    turn_ids = (f"t{i}" for i in itertools.count(1))
+    done = False
+
+    def turns():
+        nonlocal done
+        while True:
+            try:
+                text = input("you> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                text = "/quit"
+            if text in ("/new", "/quit"):
+                done = text == "/quit"
+                return
+            if text:
+                yield next(turn_ids), text
+
+    for session in itertools.count(1):
+        yield session, turns()
+        if done:
+            return
+
+
+def run_scenario(scenario, store, make_agent, version, out_path, extra=None, loc=None, sessions=None):
+    """make_agent(session_number) -> a NEW agent object each call (session 2 = new instance).
+    sessions: (session, turns) pairs to run instead of the scenario's own turns (see interactive_sessions)."""
+    interactive = sessions is not None
     out_path = Path(out_path)
     snap_dir = out_path.parent / f"{out_path.stem}_snapshots"
     snap_dir.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     turns, snaps, answers, instances = [], {}, {}, {}
 
-    for sess in scenario["sessions"]:
-        n = sess["session"]
+    for n, session_turns in sessions or scripted_sessions(scenario):
         agent = make_agent(n)
         instances[n] = f"{type(agent).__name__}@{id(agent)}"
         print(f"[scenario] session {n} started, instance={instances[n]}")
-        for t in sess["turns"]:
-            store.set_turn(n, t["id"])
+        for tid, text in session_turns:
+            store.set_turn(n, tid)
             t0 = time.time()
-            r = agent.ask(t["text"])
+            r = agent.ask(text)
             r.setdefault("time_s", round(time.time() - t0, 2))
-            answers[t["id"]] = r["answer"]
-            snaps[t["id"]] = store.snapshot()
-            (snap_dir / f"after_{t['id']}.json").write_text(
-                json.dumps(snaps[t["id"]], indent=2, ensure_ascii=False), encoding="utf-8")
-            turns.append({"session": n, "id": t["id"], "text": t["text"], "tokens": r["tokens"],
+            answers[tid] = r["answer"]
+            snaps[tid] = store.snapshot()
+            (snap_dir / f"after_{tid}.json").write_text(
+                json.dumps(snaps[tid], indent=2, ensure_ascii=False), encoding="utf-8")
+            turns.append({"session": n, "id": tid, "text": text, "tokens": r["tokens"],
                           "model_calls": r["model_calls"], "tools": r["tools"],
                           "cost_usd": r["cost_usd"], "time_s": r["time_s"]})
-            print(f"[scenario] {t['id']}: tools={r['tools']} calls={r['model_calls']} "
+            if interactive:
+                print(f"jobscout> {r['answer']}\n")
+            print(f"[scenario] {tid}: tools={r['tools']} calls={r['model_calls']} "
                   f"in={r['tokens']['input']} out={r['tokens']['output']}")
         agent.end_session()
 
@@ -90,8 +127,8 @@ def run_scenario(scenario, store, make_agent, version, out_path, extra=None, loc
            "details_turns": scenario.get("details_turns", ["t7"])}
     results = checks.run_checks(ctx, scenario.get("checks"))
     passed = sum(c["passed"] for c in results)
-    result = {"version": version, "model": scenario["model"], "effort": scenario["effort"],
-              **(extra or {}), "started_at": started, "turns": turns, "totals": _totals(turns),
+    result = {"version": version, "mode": "interactive" if interactive else "scripted",
+              "model": scenario["model"], "effort": scenario["effort"], **(extra or {}), "started_at": started, "turns": turns, "totals": _totals(turns),
               "checks": results, "checks_passed": f"{passed}/{len(results)}", "loc": loc or {}}
     out_path.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     for c in results:

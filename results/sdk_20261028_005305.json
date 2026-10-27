@@ -1,0 +1,148 @@
+{
+  "version": "sdk",
+  "mode": "interactive",
+  "model": "gpt-5.6-luna",
+  "effort": "medium",
+  "library_versions": {
+    "openai-codex": "0.163.0",
+    "mcp": "1.30.0"
+  },
+  "http_mode": "live",
+  "billing": "chatgpt-plus (cost_usd is API-equivalent)",
+  "started_at": "2026-10-27T22:53:05Z",
+  "turns": [
+    {
+      "session": 1,
+      "id": "t1",
+      "text": "I want to find a job in jerusalem",
+      "tokens": {
+        "input": 11919,
+        "cache_read": 44928,
+        "cache_write": 0,
+        "output": 372
+      },
+      "model_calls": 2,
+      "tools": [
+        "search_jobs"
+      ],
+      "cost_usd": 0.003729,
+      "time_s": 12.78
+    },
+    {
+      "session": 1,
+      "id": "t2",
+      "text": "search me a job in tel aviv",
+      "tokens": {
+        "input": 1883,
+        "cache_read": 44032,
+        "cache_write": 0,
+        "output": 793
+      },
+      "model_calls": 2,
+      "tools": [
+        "search_jobs"
+      ],
+      "cost_usd": 0.002209,
+      "time_s": 6.35
+    },
+    {
+      "session": 1,
+      "id": "t3",
+      "text": "search me a job in tel aviv with up to 1 year of experiance",
+      "tokens": {
+        "input": 1819,
+        "cache_read": 47616,
+        "cache_write": 0,
+        "output": 516
+      },
+      "model_calls": 2,
+      "tools": [
+        "search_jobs"
+      ],
+      "cost_usd": 0.001935,
+      "time_s": 5.89
+    },
+    {
+      "session": 1,
+      "id": "t4",
+      "text": "search me a junior job in israel",
+      "tokens": {
+        "input": 1756,
+        "cache_read": 75648,
+        "cache_write": 0,
+        "output": 452
+      },
+      "model_calls": 3,
+      "tools": [
+        "search_jobs",
+        "search_jobs"
+      ],
+      "cost_usd": 0.002407,
+      "time_s": 6.15
+    }
+  ],
+  "totals": {
+    "tokens": {
+      "input": 17377,
+      "cache_read": 212224,
+      "cache_write": 0,
+      "output": 2133
+    },
+    "cache_pct": 92.4,
+    "model_calls": 9,
+    "cost_usd": 0.01028,
+    "time_s": 31.2
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "passed": false,
+      "detail": "no JFrog job in tracker after t3"
+    },
+    {
+      "id": "C2",
+      "passed": false,
+      "detail": "cities=[] strict=False changes=0"
+    },
+    {
+      "id": "C3",
+      "passed": false,
+      "detail": "no search_jobs call in t6"
+    },
+    {
+      "id": "C4",
+      "passed": false,
+      "detail": "t1: 11 board requests, 1 search_jobs; t6: 0 board requests, 0 search_jobs"
+    },
+    {
+      "id": "C5",
+      "passed": false,
+      "detail": "mentions company+applied=False, new instance=False"
+    },
+    {
+      "id": "C6",
+      "passed": false,
+      "detail": "error: KeyError: 't7'"
+    },
+    {
+      "id": "C7",
+      "passed": false,
+      "detail": "error: KeyError: 't7'"
+    },
+    {
+      "id": "C8",
+      "passed": true,
+      "detail": "details outside ['t7']: []; search outputs with description: []"
+    }
+  ],
+  "checks_passed": "1/8",
+  "loc": {
+    "memory": 3,
+    "context": 2,
+    "loop": 2,
+    "tools": 17,
+    "history": 4,
+    "tokens": 4,
+    "total": 32
+  }
+}

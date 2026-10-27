@@ -22,8 +22,15 @@ Same venv and `pip install -r requirements.txt`. Copy `.env.example` to `.env` a
 ```bash
 python scripts/record_fixtures.py                       # once, live: records board responses
 set JOBSCOUT_HTTP=replay
+python SDK/main.py                                      # interactive: type your own turns
+python API/main.py                                      # same, API version (needs OPENAI_API_KEY)
 python SDK/main.py --scenario scenario.json --out results/sdk.json
 python API/main.py --scenario scenario.json --out results/api.json   # needs OPENAI_API_KEY
 python API/main.py --scenario scenario.json --out results/api.json --compact-threshold 2000   # shows compaction
 pytest -q tests/                                        # offline, no key, no network
 ```
+Without `--scenario`, both versions are interactive: type a message at `you>`, `/new` ends the session
+and starts a new agent instance (like session 2 in the scenario), `/quit` (or Ctrl+C / Ctrl+Z) finishes the run.
+Model and effort still come from `scenario.json`. Turns are numbered t1, t2, ... across sessions and the result
+file (`results/<version>_<timestamp>.json`) is written the same way, so typing the 8 scenario turns in order still
+gives meaningful checks; free-form chats will mostly fail them.
