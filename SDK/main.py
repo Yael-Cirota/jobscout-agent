@@ -1,6 +1,6 @@
 """Run the JobScout scenario on the Codex SDK.
 
-python SDK/main.py --scenario scenario.json [--out results/sdk.json]
+python SDK/main.py [--scenario scenario.json] [--out results/sdk.json]
 """
 import argparse
 import os
@@ -17,14 +17,15 @@ from shared.store import Store  # noqa: E402
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--scenario", required=True)
+    ap.add_argument("--scenario", help="replay the turns in this file (default: type them interactively; "
+                                       "model and effort still come from scenario.json)")
     ap.add_argument("--out", help="result file (default: results/sdk_<timestamp>.json)")
     ap.add_argument("--state-dir", default="state/sdk")
     args = ap.parse_args()
 
     if os.environ.pop("OPENAI_API_KEY", None):  # the ChatGPT login wins; Codex inherits this environment
         print("[main.py] OPENAI_API_KEY ignored: using your codex login (ChatGPT Plus).")
-    scenario = scenario_runner.load_scenario(args.scenario)
+    scenario = scenario_runner.load_scenario(args.scenario or ROOT / "scenario.json")
     if scenario["model"].startswith("REPLACE"):
         sys.exit("Set a real model in scenario.json (one that works in Codex with ChatGPT Plus AND in the API).")
 
@@ -44,7 +45,8 @@ def main():
                                   "mcp": metadata.version("mcp")},
              "http_mode": http_mode, "billing": "chatgpt-plus (cost_usd is API-equivalent)"}
     out = args.out or scenario_runner.default_out_path("sdk")
-    scenario_runner.run_scenario(scenario, store, make_agent, "sdk", out, extra, loc)
+    sessions = None if args.scenario else scenario_runner.interactive_sessions()
+    scenario_runner.run_scenario(scenario, store, make_agent, "sdk", out, extra, loc, sessions)
 
 
 if __name__ == "__main__":

@@ -127,6 +127,30 @@ pip install -r requirements.txt
 ```powershell
 codex login            # sign in with ChatGPT Plus
 ```
+The SDK version always uses the `codex login`. If `OPENAI_API_KEY` is set, `SDK/main.py` ignores it
+(removes it from its own environment) and prints a notice, so billing never goes to the key.
+Set `model` in `scenario.json` (a model available in Codex with Plus and in the API).
+
+## Setup (API version)
+Same venv and `pip install -r requirements.txt`. Copy `.env.example` to `.env` and put your key there (`.env` is git-ignored), or set the
+`OPENAI_API_KEY` environment variable (it wins over `.env`). `API/main.py` exits without a key. `shared/pricing.py` needs the model's prices, or `cost_usd` stays `null`.
+
+## Run
+```bash
+python scripts/record_fixtures.py                       # once, live: records board responses
+set JOBSCOUT_HTTP=replay
+python SDK/main.py                                      # interactive: type your own turns
+python API/main.py                                      # same, API version (needs OPENAI_API_KEY)
+python SDK/main.py --scenario scenario.json --out results/sdk.json
+python API/main.py --scenario scenario.json --out results/api.json   # needs OPENAI_API_KEY
+python API/main.py --scenario scenario.json --out results/api.json --compact-threshold 2000   # shows compaction
+pytest -q tests/                                        # offline, no key, no network
+```
+Without `--scenario`, both versions are interactive: type a message at `you>`, `/new` ends the session
+and starts a new agent instance (like session 2 in the scenario), `/quit` (or Ctrl+C / Ctrl+Z) finishes the run.
+Model and effort still come from `scenario.json`. Turns are numbered t1, t2, ... across sessions and the result
+file (`results/<version>_<timestamp>.json`) is written the same way, so typing the 8 scenario turns in order still
+gives meaningful checks; free-form chats will mostly fail them.
 The SDK version always uses the `codex login`. If `OPENAI_API_KEY` is set, `SDK/main.py` removes it from
 its own environment and prints a notice, so billing never goes to the key.
 Set `model` in `scenario.json` to a model that is available both in Codex with Plus and in the API.
@@ -182,7 +206,83 @@ Same scenario, same model (`gpt-5.6-luna`, effort `medium`), replayed board data
 | | API harness | Codex SDK |
 |---|---|---|
 | Checks passed | 8/8 | 8/8 |
-| Total tokens | ~31,000 | ~268,800 |
+| Total tokens | ~31,000 | ~268,800 |What needs to be done
+Task: One agent, two harnesses
+
+The Goal
+Think of your own agent that would actually help you, and build it twice:
+
+* `API/`: On the raw Messages API. You write the entire harness yourself.
+* `SDK/`: On the Claude Agent SDK. Claude Code runs the harness, and you only configure it.
+Finally, measure both versions and explain what the SDK saved you and what it cost you.
+
+1. Choose an Agent
+Any domain is allowed. Some ideas: study planner, reading list, job search tracker, personal budget, fitness coach, recipe and shopping organization.
+The agent must include:
+
+* **Tools:** At least 3 of your own tools, one of which must be external (internet, API, or files).
+* **Memory:** Something it remembers between sessions, such as decisions, preferences, or history.
+* **Context engineering:** It does not receive all information in every turn, but only what is relevant.
+* **Token optimization:** Compact tool output, and measurement of how much each turn costs.
+
+2. What to Build in Each Version
+
+| Feature | `API/`: You write | `SDK/`: You configure |
+| --- | --- | --- |
+| **Agent Loop** | `loop.py`: Loop runs as long as `stop_reason == "tool_use"`. All `tool_result`s return in one message | `client.query() + receive_response()` |
+| **Tools** | `tools.py`: JSON schemas, dispatch, and errors returning to the model as `is_error` | `@tool + create_sdk_mcp_server`, and built-in tools |
+| **Conversation** | `history.py`: Saved to disk, append-only | `resume=session_id` |
+| **Memory** | `memory.py`: Where memory is saved and how it is retrieved | e.g., `CLAUDE.md` with `setting_sources=["project"]` |
+| **Context** | `context.py`: What goes into each turn | What Claude Code adds on its own, and what the model retrieves via tools |
+| **Context Window** | `compaction.py`: Summarize the entire conversation beyond a threshold | Automatic |
+| **Caching** | `caching.py`: `cache_control` points | Automatic |
+| **Tokens** | `tokens.py`: Usage and cost per turn | `ResultMessage.usage` and `total_cost_usd` |
+
+Mandatory:
+
+* In the API version, one file per responsibility inside `API/harness/`, and every runtime action is printed with the name of the file that executed it.
+* In the SDK version, every line that replaces such a file is marked with `# replaces: <name>`.
+* In the SDK configurations: your own system prompt, a reduced tool list, and `strict_mcp_config=True`.
+* The domain code (tools and data) is located in `shared/`, and both versions use it.
+
+3. Structure
+
+```text
+<agent-name>-<your-name>/
+  shared/        Shared tools and data
+  API/           main.py, agent.py, harness/{loop,tools,history,memory,context,compaction,caching,tokens}.py
+  SDK/           main.py, agent.py, tools.py
+  tests/         Offline tests with a mock client, without a key
+  scenario.json  Your scenario
+  results/       api.json, sdk.json
+  REPORT.md
+
+```
+
+4. Scenario and Measurement
+Write `scenario.json` with 6 to 8 turns across two sessions. Session 2 runs on a new instance of the agent that loads the state from the disk. The scenario must include:
+
+* Tool usage.
+* Saving to memory.
+* Retrieval from memory in session 2.
+* Usage of the external tool.
+* A request that contradicts something saved.
+
+Define at least 5 pass/fail tests, most of them on the saved state, not just on the response text.
+
+```bash
+python API/main.py --scenario scenario.json --out results/api.json
+python SDK/main.py --scenario scenario.json --out results/sdk.json
+
+```
+
+In the results file, for each turn: the tokens (input, cache read, cache write, output), the number of calls to the model, the tools activated, the cost, and the time. In addition: the test results, and the line of code count for each part of the harness.
+
+Comparison rules:
+
+* The same model and the same effort in both versions (recommended `claude-opus-5-5` with `medium`).
+* Locked library versions.
+* Every run starts from a clean state.
 | Cost (API list price) | $0.0043 | $0.0118 |
 | Time | 29.5 s | 36.3 s |
 | Harness code lines | 514 | 32 |
